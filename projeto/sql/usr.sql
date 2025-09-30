@@ -31,7 +31,8 @@ CREATE TABLE produto (
     nome VARCHAR(255) NOT NULL,
     descricao TEXT,
     preco DECIMAL(10,2) NOT NULL,
-    imagem VARCHAR(255)
+    imagem VARCHAR(255),
+    categoria VARCHAR(100) DEFAULT NULL
 );
 
 -- Tabelas para salvar pedidos e itens

@@ -5,6 +5,7 @@ const menuItems = [
         description: "Se você busca uma corrida mais confortável e de alto desempenho, o Nike Revolution 7 é a escolha ideal.",
         price: 309.99,
         image: "imgs/tenis1.jpg",
+        category: "Masculino",
     },
     {
         id: 2,
@@ -12,6 +13,7 @@ const menuItems = [
         description: "O Mizuno Wave Frontier 15 é um tênis de corrida de alta performance projetado para corredores que buscam uma experiência de corrida suave e confortável.",
         price: 469.99,
         image: "imgs/tenis2.jpg",
+        category: "Masculino",
     },
     {
         id: 3,
@@ -19,6 +21,7 @@ const menuItems = [
         description: "O Tênis ASICS GEL-Nagoya 7 masculino foi totalmente repaginado, trazendo um design moderno aliado a tecnologias avançadas que atendem às necessidades dos corredores mais exigentes.",
         price: 379.99,
         image: "imgs/tenis3.jpg",
+        category: "Masculino",
     },
     {
         id: 4,
@@ -26,6 +29,7 @@ const menuItems = [
         description: "O Tênis adidas RunFalcon 5 Feminino combina estilo e conforto para o seu dia a dia.",
         price: 349.99,
         image: "imgs/tenis1.jpg",
+        category: "Feminino",
     },
     {
         id: 5,
@@ -33,6 +37,7 @@ const menuItems = [
         description: "Experimente o máximo em desempenho e conforto com o Tênis Mizuno Wave Dynasty 6.",
         price: 349.99,
         image: "imgs/tenis2.jpg",
+        category: "Masculino",
     },
 ];
 
@@ -115,17 +120,14 @@ function adjustQuantity(itemId, change) {
     if (item) {
         item.quantity += change;
 
-    updateCart();
-    toggleCart();
-}
-
         if (item.quantity <= 0) {
             cart = cart.filter((i) => i.id !== itemId);
         }
     }
 
     updateCart();
-
+    toggleCart();
+}
 
 function toggleCart() {
     document.querySelector(".cart-sidebar").classList.toggle("active");
@@ -150,13 +152,20 @@ document.querySelector(".menu-hamburguer").addEventListener("click", function ()
     document.querySelector(".nav").classList.toggle("active");
 });
 
-document.getElementById("searchInput").addEventListener("input", (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    document.querySelectorAll(".menu-item").forEach((item) => {
+function filterItems() {
+    const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+    const selectedCategory = document.getElementById("categorySelect").value;
+    document.querySelectorAll(".menu-item").forEach((item, index) => {
         const title = item.querySelector(".item-title").textContent.toLowerCase();
-        item.style.display = title.includes(searchTerm) ? "block" : "none";
+        const category = menuItems[index].category;
+        const matchesSearch = title.includes(searchTerm);
+        const matchesCategory = selectedCategory === "" || category === selectedCategory;
+        item.style.display = matchesSearch && matchesCategory ? "block" : "none";
     });
-});
+}
+
+document.getElementById("searchInput").addEventListener("input", filterItems);
+document.getElementById("categorySelect").addEventListener("change", filterItems);
 
 document.addEventListener("DOMContentLoaded", initMenu);
 
@@ -220,4 +229,3 @@ if (calcFreteBtn) {
         }
     });
 }
-    freteValue = 0;
