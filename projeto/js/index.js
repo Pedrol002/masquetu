@@ -115,13 +115,17 @@ function adjustQuantity(itemId, change) {
     if (item) {
         item.quantity += change;
 
+    updateCart();
+    toggleCart();
+}
+
         if (item.quantity <= 0) {
             cart = cart.filter((i) => i.id !== itemId);
         }
     }
 
     updateCart();
-}
+
 
 function toggleCart() {
     document.querySelector(".cart-sidebar").classList.toggle("active");
@@ -216,3 +220,4 @@ if (calcFreteBtn) {
         }
     });
 }
+    freteValue = 0;

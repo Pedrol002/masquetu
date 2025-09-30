@@ -105,6 +105,73 @@ $result = mysqli_query($conexao, $sql);
         <p>Calculando frete...</p>
     </div>
 
+    <section class="feedback-section">
+        <h2>Envie seu Feedback</h2>
+        <form id="feedbackForm">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required />
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" required />
+            <label for="mensagem">Mensagem:</label>
+            <textarea id="mensagem" name="mensagem" rows="4" required></textarea>
+            <button type="submit">Enviar Feedback</button>
+        </form>
+        <p id="message"></p>
+
+        <h3>Feedbacks Recebidos</h3>
+        <div id="feedbackList"></div>
+    </section>
+
     <script src="js/index.js"></script>
+    <script>
+        async function fetchFeedbacks() {
+            const response = await fetch('API/feedback.php');
+            const feedbacks = await response.json();
+            const feedbackList = document.getElementById('feedbackList');
+            if (!feedbackList) return;
+            feedbackList.innerHTML = '';
+            feedbacks.forEach(fb => {
+                const div = document.createElement('div');
+                div.className = 'feedback-item';
+                div.innerHTML = `
+                    <strong>${fb.nome}</strong> (${fb.email}) - <em>${new Date(fb.data_envio).toLocaleString()}</em>
+                    <p>${fb.mensagem}</p>
+                `;
+                feedbackList.appendChild(div);
+            });
+        }
+
+        document.getElementById('feedbackForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const mensagem = document.getElementById('mensagem').value;
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = '';
+
+            try {
+                const response = await fetch('API/feedback.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, email, mensagem })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    messageEl.style.color = 'green';
+                    messageEl.textContent = data.message;
+                    document.getElementById('feedbackForm').reset();
+                    fetchFeedbacks();
+                } else {
+                    messageEl.style.color = 'red';
+                    messageEl.textContent = data.error || 'Erro ao enviar feedback.';
+                }
+            } catch (error) {
+                messageEl.style.color = 'red';
+                messageEl.textContent = 'Erro na comunicação com o servidor.';
+            }
+        });
+
+        fetchFeedbacks();
+    </script>
 </body>
 </html>
